@@ -7,6 +7,7 @@ use Darryldecode\Cart\Facades\CartFacade as Cart;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Order as Orders;
 use App\Models\Product;
+use App\MyServices\Facades\Payment;
 
 class HomeController extends Controller
 {
@@ -49,27 +50,24 @@ class HomeController extends Controller
         return view('cart', compact('items'));
     }
 
-    public function checkout()
-    {
-        if(Auth::user()->paymentMethods->count() == 0){
-            return redirect(route('paymentMethods.create'));
-        }
-        $items = Cart::session(Auth::user()->id)->getContent();
-        return view('checkout', compact('items'));
-    }
-
     public function payment(Request $request)
     {
         $total = Cart::session(Auth::user()->id)->getTotal();
         $payment = $request->input('payment');
         $order = Orders::create([
             'user_id' => Auth::user()->id,
-            'products' => Cart::session(Auth::user()->id)->getContent(),
+            'products' => json_encode(Cart::session(Auth::user()->id)->getContent()),
             'status' => 'pending',
         ]);
         $order->save();
         if ($payment == 'credit card') {
-            return redirect('/checkout')->with('total', $total, 'order_id', $order->id);
+            if(Auth::user()->paymentMethods->count() == 0){
+                Orders::find($order->id)->delete();
+                return redirect(route('paymentMethods.create'));
+            }
+            $paymentMethod_id = Auth::user()->paymentMethods->first()->stripe_id;
+            Payment::createAndConfirmPaymentIntent($total,'usd',$paymentMethod_id);
+            OrdersController::sucess($order->id);
         } elseif ($payment == 'cash') {
             OrdersController::sucess();
         } else {
@@ -77,4 +75,12 @@ class HomeController extends Controller
         }
     }
 
+    public function sucess($id = null)
+    {
+        $order = Orders::find($id);
+        $order->status = 'sucess';
+        $order->save();
+        
+        return view('orders/sucess', compact('order'));
+    }
 }

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\PaymentMethod;
+use App\MyServices\Facades\Payment;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Router;
 use Illuminate\Support\Facades\Auth;
@@ -28,22 +29,18 @@ class PaymentMethodsController extends Controller
     public function store(Request $request)
     {
 
-        $stripe = new \Stripe\StripeClient(env('STRIPE_SECRET'));
-        $paymentMethod = $stripe->paymentMethods->create([
-            'type' => 'card',
-            'card' => [
-                'number' => $request->number,
-                'exp_month' => $request->exp_month,
-                'exp_year' => $request->exp_year,
-                'cvc' => $request->cvc,
-            ],
-        ]);
+       $paymentMethod = Payment::createPaymentMethod($request->number, $request->exp_month, $request->exp_year, $request->cvc);
 
-        PaymentMethod::create([
-            'user_id' => Auth::user()->id,
-            'stripe_id' => $paymentMethod->id,
-        ]);
-
+        // $stripe = new \Stripe\StripeClient(env('STRIPE_SECRET'));
+        // $paymentMethod = $stripe->paymentMethods->create([
+        //     'type' => 'card',
+        //     'card' => [
+        //         'number' => $request->number,
+        //         'exp_month' => $request->exp_month,
+        //         'exp_year' => $request->exp_year,
+        //         'cvc' => $request->cvc,
+        //     ],
+        // ]);
         return redirect(route('cart'))->with('success', 'Payment method added successfully');
     }
 

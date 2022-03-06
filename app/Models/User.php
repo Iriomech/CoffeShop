@@ -9,7 +9,7 @@ use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
 
-class User extends Authenticatable
+class User extends Authenticatable implements MustVerifyEmail
 {
     use \Backpack\CRUD\app\Models\Traits\CrudTrait;
     use HasApiTokens, HasFactory, Notifiable, HasRoles;
@@ -46,11 +46,11 @@ class User extends Authenticatable
 
     public function orders()
     {
-        return $this->hasMany('App\Models\Order');
+        return $this->hasMany(Order::class, 'user_id');
     }
 
     public function paymentMethods()
     {
-        return $this->hasMany('App\Models\PaymentMethod');
+        return $this->hasMany(PaymentMethod::class, 'user_id');
     }
 }

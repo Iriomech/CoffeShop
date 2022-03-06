@@ -176,7 +176,8 @@ return [
         // App\Providers\BroadcastServiceProvider::class,
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
-        Darryldecode\Cart\CartServiceProvider::class
+        Darryldecode\Cart\CartServiceProvider::class,
+        App\Providers\PaymentServiceProvider::class,
     ],
 
     /*
@@ -192,6 +193,7 @@ return [
 
     'aliases' => Facade::defaultAliases()->merge([
         'Cart' => Darryldecode\Cart\Facades\CartFacade::class,
+        'Payment' => App\Facades\PaymentFacade::class,
     ])->toArray(),
 
 ];

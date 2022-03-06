@@ -2,16 +2,16 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Requests\OrderRequest;
+use App\Http\Requests\PaymentMethodRequest;
 use Backpack\CRUD\app\Http\Controllers\CrudController;
 use Backpack\CRUD\app\Library\CrudPanel\CrudPanelFacade as CRUD;
 
 /**
- * Class OrderCrudController
+ * Class PaymentMethodCrudController
  * @package App\Http\Controllers\Admin
  * @property-read \Backpack\CRUD\app\Library\CrudPanel\CrudPanel $crud
  */
-class OrderCrudController extends CrudController
+class PaymentMethodCrudController extends CrudController
 {
     use \Backpack\CRUD\app\Http\Controllers\Operations\ListOperation;
     use \Backpack\CRUD\app\Http\Controllers\Operations\CreateOperation;
@@ -26,9 +26,9 @@ class OrderCrudController extends CrudController
      */
     public function setup()
     {
-        CRUD::setModel(\App\Models\Order::class);
-        CRUD::setRoute(config('backpack.base.route_prefix') . '/order');
-        CRUD::setEntityNameStrings('order', 'orders');
+        CRUD::setModel(\App\Models\PaymentMethod::class);
+        CRUD::setRoute(config('backpack.base.route_prefix') . '/payment-method');
+        CRUD::setEntityNameStrings('payment method', 'payment methods');
     }
 
     /**
@@ -39,13 +39,8 @@ class OrderCrudController extends CrudController
      */
     protected function setupListOperation()
     {
-        CRUD::column('id');
-        CRUD::column('status');
-        CRUD::column('products');
         CRUD::column('user_id');
-        CRUD::column('payment_method_id');
-        CRUD::column('created_at');
-        CRUD::column('updated_at');
+        CRUD::column('stripe_id');
 
         /**
          * Columns can be defined using the fluent syntax or array syntax:
@@ -62,18 +57,10 @@ class OrderCrudController extends CrudController
      */
     protected function setupCreateOperation()
     {
-        CRUD::setValidation(OrderRequest::class);
+        CRUD::setValidation(PaymentMethodRequest::class);
 
-        CRUD::field('id');
-        CRUD::field('status')->type('enum', [
-            'pending' => 'pending',
-            'paid' => 'paid',
-            'cancelled' => 'cancelled',
-            'completed' => 'completed',
-        ]);
         CRUD::field('user_id');
-        CRUD::field('created_at');
-        CRUD::field('updated_at');
+        CRUD::field('stripe_id');
 
         /**
          * Fields can be defined using the fluent syntax or array syntax:
