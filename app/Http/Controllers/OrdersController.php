@@ -7,15 +7,16 @@ use Illuminate\Http\Request;
 
 class OrdersController extends Controller
 {
-    public static function sucess($id=null)
-    {
-        if($id){
-            $order = Orders::find($id);
-            $order->status = 'paid';
-            $order->save();
-            return redirect(route('order.sucess'))->with('order', $order);
-        }else{
-            return redirect(route('orders.sucess'));
-        }
-    }
+    // public static function sucess($id=null)
+    // {
+    //     if($id){
+    //         $order = Orders::find($id);
+    //         $order->status = 'paid';
+    //         $order->save();
+    //         // echo '<h1>Pedido pagado</h1>';
+    //         return redirect()->route('order.sucess',$order->id);
+    //     }else{
+    //         return redirect(route('order.sucess'));
+    //     }
+    // }
 }

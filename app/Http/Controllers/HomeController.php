@@ -52,8 +52,10 @@ class HomeController extends Controller
 
     public function payment(Request $request)
     {
+        // Coge el total de la compra
         $total = Cart::session(Auth::user()->id)->getTotal();
         $payment = $request->input('payment');
+        // Crea el pedido
         $order = Orders::create([
             'user_id' => Auth::user()->id,
             'products' => json_encode(Cart::session(Auth::user()->id)->getContent()),
@@ -61,15 +63,19 @@ class HomeController extends Controller
         ]);
         $order->save();
         if ($payment == 'credit card') {
-            if(Auth::user()->paymentMethods->count() == 0){
+            if (Auth::user()->paymentMethods->count() == 0) {
                 Orders::find($order->id)->delete();
                 return redirect(route('paymentMethods.create'));
             }
             $paymentMethod_id = Auth::user()->paymentMethods->first()->stripe_id;
-            Payment::createAndConfirmPaymentIntent($total,'usd',$paymentMethod_id);
-            OrdersController::sucess($order->id);
+            Payment::createAndConfirmPaymentIntent($total, 'usd', $paymentMethod_id);
+            $order->update(['status' => 'paid']);
+            Cart::session(Auth::user()->id)->clear();
+            return redirect()->route('orders.sucess')->with([
+                'order' => $order
+            ]);
         } elseif ($payment == 'cash') {
-            OrdersController::sucess();
+            return view('orders/success', compact('order'));
         } else {
             return redirect()->back()->with('error', 'Please select payment method');
         }
@@ -78,9 +84,9 @@ class HomeController extends Controller
     public function sucess($id = null)
     {
         $order = Orders::find($id);
-        $order->status = 'sucess';
+        $order->status = 'paid';
         $order->save();
-        
-        return view('orders/sucess', compact('order'));
+
+        return redirect()->route('home')->with('success', 'Order placed successfully');
     }
 }

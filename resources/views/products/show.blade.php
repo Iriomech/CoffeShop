@@ -2,6 +2,14 @@
 
 @section('content')
 <div class="container">
+    <div class="row p-2">
+        <div class="col-md-2">      
+            <a href="{{ route('home') }}" class="btn border-yellow-900 border-1 hover:bg-yellow-900 hover:text-white">
+                <i class="fas fa-arrow-left"></i>
+                Volver
+            </a>
+        </div>
+    </div>
     <div class="card">
         <div class="card-header">
             <h3>{{ $product->name }}</h3>

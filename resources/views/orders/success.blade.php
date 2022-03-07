@@ -1,23 +1,17 @@
 @extends('layouts.app')
 
 @section('content')
-    <div class="container">
-        <div class="row justify-content-center">
-            <div class="col-md-8">
-                <div class="card">
-                    <div class="card-header">{{ __('Your Order has been placed') }}</div>
-
-                    <div class="card-body">
-                        <p class="text-center">
-                            {{ __('Your order number is: ') $order->id }}
-                        </p>
-
-                        <a href="{{ route('home') }}" class="btn btn-primary">
-                            {{ __('Go to Home') }}
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+<div class="container align-center">
+    <p class="h1 text-center">Thank you for your order!</p>
+    <p class="h3 text-center">Your order number is {{ $order->id }}.</p>
+    <p class="text-center">
+        Your order has been successfully processed! Thank you for your business.
+        Go to the cashier to collect your order.
+    </p>
+    <p class="text-center">
+        <a href="{{ route('home') }}" class="btn btn-primary">
+            Go to homepage
+        </a>
+    </p>
+</div>
 @endsection

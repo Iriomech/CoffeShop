@@ -25,7 +25,8 @@ class PaymentMethodRequest extends FormRequest
     public function rules()
     {
         return [
-            // 'name' => 'required|min:5|max:255'
+            'stripe_id' => 'required|string',
+            'user_id' => 'required|numeric',
         ];
     }
 

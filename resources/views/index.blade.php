@@ -43,6 +43,9 @@
             </div>
             <div class="hidden fixed top-0 right-0 px-6 py-4 sm:block">
                 @auth
+                @if(backpack_user()->hasRole('employee') || backpack_user()->hasRole('admin'))
+                <a href="/admin" class="text-sm text-gray-700 dark:text-gray-500">Admin</a>
+                @endif
                 <a href="{{ url('/home') }}" class="text-sm text-gray-700 dark:text-gray-500">Home</a>
                 @else
                 <a href="{{ route('login') }}" class="text-sm text-gray-700 dark:text-gray-500">Login</a>
@@ -66,7 +69,7 @@
                         Start your day with <br>
                         a black Coffee
                     </h1>
-                    <a href="#" class="primary-btn text-uppercase">Buy Now</a>
+                    <a href="{{ route('home') }}" class="primary-btn text-uppercase">Buy Now</a>
                 </div>
             </div>
         </div>

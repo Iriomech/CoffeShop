@@ -14,4 +14,11 @@ class PaymentMethod extends Model
         'user_id',
         'stripe_id',
     ];
+
+    public static function boot()
+    {
+        parent::boot();
+
+        
+    }
 }
