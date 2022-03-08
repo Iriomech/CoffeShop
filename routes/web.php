@@ -44,7 +44,7 @@ Route::post('/email/verification-notification', function (Request $request) {
     return back()->with('message', 'Verification link sent!');
 })->middleware(['auth', 'throttle:6,1'])->name('verification.send');
 
-Route::group(['middleware' => ['verified']], function () {
+Route::group(['middleware' => ['verified','language']], function () {
     Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
     Route::get('/cart', [App\Http\Controllers\HomeController::class, 'cart'])->name('cart');
