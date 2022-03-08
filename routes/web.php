@@ -68,6 +68,7 @@ Route::group(['middleware' => ['verified','language']], function () {
     Route::post('payment-methods/store', [App\Http\Controllers\PaymentMethodsController::class, 'store'])->name('paymentMethods.store');
 
     Route::get('/route/sucess', function() {
+        // Get the order object from the session
         $order = FacadesSession::get('order');
         return view('orders/success', compact('order'));
     })->name('orders.sucess');

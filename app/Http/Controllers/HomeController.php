@@ -28,24 +28,18 @@ class HomeController extends Controller
      */
     public function index()
     {
-        // if(Auth::user()->role == 'admin'){
-        //     return redirect('/admin');
-        // }
-        // if(Auth::user()->role == 'user'){
+        // If the search query is not empty, then search for the product.
         if (request()->has('search')) {
             $products = Product::where('name', 'like', '%' . request('search') . '%')->paginate(6)->appends('search', request('search'));
         } else {
             $products = Product::paginate(6);
         }
         return view('home', compact('products'));
-        // // }
-        // if(Auth::user()->role == 'employee'){
-        //     return redirect('/admin');
-        // }
     }
 
     public function cart()
     {
+        // Get the cart instance.
         $items = Cart::session(Auth::user()->id)->getContent();
         return view('cart', compact('items'));
     }
@@ -63,30 +57,29 @@ class HomeController extends Controller
         ]);
         $order->save();
         if ($payment == 'credit card') {
+            // Redirecciona a la pagina de crear tarjeta de credito si el usuario eligio pagar con tarjeta de credito y no tiene una tarjeta de credito asociada
             if (Auth::user()->paymentMethods->count() == 0) {
                 Orders::find($order->id)->delete();
                 return redirect(route('paymentMethods.create'));
             }
+            // Obtiene el metodo de pago
             $paymentMethod_id = Auth::user()->paymentMethods->first()->stripe_id;
+            // Realiza el pago
             Payment::createAndConfirmPaymentIntent($total, 'usd', $paymentMethod_id);
+            // Actualiza el estado del pedido y borra el contenido del carrito
             $order->update(['status' => 'paid']);
             Cart::session(Auth::user()->id)->clear();
+            // Redirecciona a la pagina de comfirmacion de la compra
             return redirect()->route('orders.sucess')->with([
                 'order' => $order
             ]);
         } elseif ($payment == 'cash') {
-            return view('orders/success', compact('order'));
+            // Redirecciona a la pagina de comfirmacion de la compra
+            return redirect()->route('orders.sucess')->with([
+                'order' => $order
+            ]);
         } else {
             return redirect()->back()->with('error', 'Please select payment method');
         }
-    }
-
-    public function sucess($id = null)
-    {
-        $order = Orders::find($id);
-        $order->status = 'paid';
-        $order->save();
-
-        return redirect()->route('home')->with('success', 'Order placed successfully');
     }
 }
