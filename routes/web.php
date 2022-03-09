@@ -25,7 +25,7 @@ Route::get('/', function () {
     return view('index', compact('products'));
 });
 
-Auth::routes();
+Auth::routes(['middleware' => ['language']]);
 
 Route::get('/email/verify', function () {
     return view('auth/verify');
