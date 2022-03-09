@@ -74,6 +74,8 @@ class HomeController extends Controller
                 'order' => $order
             ]);
         } elseif ($payment == 'cash') {
+            //Borra el contenido del carrito
+            Cart::session(Auth::user()->id)->clear();
             // Redirecciona a la pagina de comfirmacion de la compra
             return redirect()->route('orders.sucess')->with([
                 'order' => $order
